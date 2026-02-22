@@ -61,33 +61,40 @@ Because none of these calls match any defined pattern, Mathematica will return t
 
 ---
 
-## Bug 3 (Secondary): `EUPEq2Tot` and `EUPEq3Tot` Internally Hardcode `θ = 1/2`
+## Bug 3 (Secondary): `EUPEq2Tot` and `EUPEq3Tot` Internally Hardcode `θ = 1/2` ✅ FIXED
 
 **Location:** Inside the body of `EUPEq2Tot` (around line 36617) and `EUPEq3Tot` (around line 24551)
 
-Even though both functions accept a `θ_` parameter, their internal calls to the lower-level `EUPXtotEqY` functions pass the literal `1/2` for `θ` instead of forwarding the parameter:
+Even though both functions accept a `θ_` parameter, their internal calls to the lower-level `EUPXtotEqY` functions were passing the literal `1/2` for `θ` instead of forwarding the parameter.
 
+**`EUPEq2Tot`** — all 7 value-function calls fixed:
 ```mathematica
-(* Inside EUPEq2Tot — θ is silently ignored: *)
-EUP1totEq2[pi, p, κ, c, 1/2]  (* should be: ..., c, θ] *)
-EUP2totEq2[pi, p, κ, c, 1/2]  (* should be: ..., c, θ] *)
-
-(* Inside EUPEq3Tot — same issue: *)
-EUP2totEq3[pi, p, κ, c, 1/2]  (* should be: ..., c, θ] *)
+(* Before *)                              (* After *)
+EUP1totEq2[pi, p, κ, c, 1/2]    →    EUP1totEq2[pi, p, κ, c, θ]
+EUP2totEq2[pi, p, κ, c, 1/2]    →    EUP2totEq2[pi, p, κ, c, θ]
+EUP3totEq2[pi, p, κ, c, 1/2]    →    EUP3totEq2[pi, p, κ, c, θ]
+EUP4totEq2[pi, p, κ, c, 1/2]    →    EUP4totEq2[pi, p, κ, c, θ]
+EUP5totEq2[pi, p, κ, c, 1/2]    →    EUP5totEq2[pi, p, κ, c, θ]
+EUP6totEq2[pi, p, κ, c, 1/2]    →    EUP6totEq2[pi, p, κ, c, θ]
+EUP7totEq2[pi, p, κ, c, 1/2]    →    EUP7totEq2[pi, p, κ, c, θ]
 ```
 
-(Note: `EUPEq1Tot` also contains this hardcoding pattern but was the original function and may be intentional there.)
+**`EUPEq3Tot`** — 1 value-function call fixed (`EUP1totEq3`, `EUP3–6totEq3` already used `θ` correctly):
+```mathematica
+(* Before *)                              (* After *)
+EUP2totEq3[pi, p, κ, c, 1/2]    →    EUP2totEq3[pi, p, κ, c, θ]
+```
 
-This means that even after fixing Bug 2, passing any `θ ≠ 0.5` to `EqPUtil` will have no effect on the Eq2 and Eq3 utility values. In the current calls — e.g. `EqPUtil[pi, p0, k, 1, γ0, .5]` — `θ` is always `0.5`, so this is dormant. But if you ever vary `θ`, these functions will silently ignore it.
+Note: Boundary functions (`cp2REq2`, `cp1WEq3`, etc.) intentionally retain `1/2`, consistent with `EUPEq1Tot`.
 
 ---
 
 ## Summary Table
 
-| # | Location | Type | Effect |
-|---|---|---|---|
-| 1 | `EQ3CONS` definition | Copy-paste error (`St1` vs `Rst2`) | `EQ3CONS` evaluates wrong region; Eq3 classification is incorrect |
-| 2 | `EqPUtil` calling `EUPEqXTot` | Argument count mismatch (5 vs 6) | All `EUPEqXTot` calls return unevaluated; `EqPUtil` always returns `0` |
-| 3 | Body of `EUPEq2Tot`, `EUPEq3Tot` | Hardcoded `θ = 1/2` ignores parameter | `θ` has no effect on Eq2/Eq3 utility values |
+| # | Location | Type | Effect | Status |
+|---|---|---|---|---|
+| 1 | `EQ3CONS` definition | Copy-paste error (`St1` vs `Rst2`) | `EQ3CONS` evaluates wrong region; Eq3 classification is incorrect | ✅ Fixed |
+| 2 | `EqPUtil` calling `EUPEqXTot` | Argument count mismatch (5 vs 6) | All `EUPEqXTot` calls return unevaluated; `EqPUtil` always returns `0` | ✅ Fixed |
+| 3 | Body of `EUPEq2Tot`, `EUPEq3Tot` | Hardcoded `θ = 1/2` ignores parameter | `θ` has no effect on Eq2/Eq3 utility values | ✅ Fixed |
 
 **The most likely cause of any immediate runtime failure is Bug 2** — it will silently cause `EqPUtil` to always return `0`, making `RegionPlot`/`Plot` appear blank or flat. Bug 1 is a logical error that produces wrong results without an error message. Bug 3 is a latent issue that activates if `θ` is ever varied.
