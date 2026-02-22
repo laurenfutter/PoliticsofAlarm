@@ -24547,9 +24547,9 @@ Cell[BoxData[
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], " ", "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP2totEq3", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", " ", 
+         RowBox[{"EUP2totEq3", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", " ", 
          RowBox[{
           RowBox[{"cp2REq3", "[", 
            RowBox[{"p", ",", "pi", ",", 
@@ -36613,18 +36613,18 @@ Cell[BoxData[
       RowBox[{
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP1totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", " ", 
+         RowBox[{"EUP1totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", " ", 
          RowBox[{"0", "<", "\[Kappa]", "<", 
           RowBox[{"cp2REq2", "[", 
            RowBox[{"p", ",", "pi", ",", 
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP2totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP2totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"cp2REq2", "[", 
            RowBox[{"p", ",", "pi", ",", 
@@ -36634,9 +36634,9 @@ Cell[BoxData[
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP3totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP3totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"c2Eq2", "[", 
            RowBox[{"p", ",", "pi", ",", " ", 
@@ -36646,9 +36646,9 @@ Cell[BoxData[
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP4totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP4totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"cp2WEq2", "[", 
            RowBox[{"p", ",", "pi", ",", 
@@ -36656,9 +36656,9 @@ Cell[BoxData[
           RowBox[{"c1Eq2", "[", "pi", "]"}]}]}], "}"}], " ", ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP5totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP5totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"c1Eq2", "[", "pi", "]"}], "<", "\[Kappa]", "<=", 
           RowBox[{"cp1WEq2", "[", 
@@ -36666,9 +36666,9 @@ Cell[BoxData[
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP6totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP6totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"cp1WEq2", "[", 
            RowBox[{"p", ",", "pi", ",", 
@@ -36678,9 +36678,9 @@ Cell[BoxData[
             RowBox[{"1", "/", "2"}]}], "]"}]}]}], "}"}], ",", 
        RowBox[{"{", 
         RowBox[{
-         RowBox[{"EUP7totEq2", "[", 
-          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",", 
-           RowBox[{"1", "/", "2"}]}], "]"}], ",", 
+         RowBox[{"EUP7totEq2", "[",
+          RowBox[{"pi", ",", "p", ",", "\[Kappa]", ",", "c", ",",
+           "\[Theta]"}], "]"}], ",", 
          RowBox[{
           RowBox[{"cp1REq2", "[", 
            RowBox[{"p", ",", "pi", ",", 
