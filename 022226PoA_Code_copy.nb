@@ -8232,8 +8232,11 @@ Cell[BoxData[
       RowBox[{"c", ",", "0", ",", "1"}], "}"}], ",", 
      RowBox[{"{", 
       RowBox[{"\[Theta]", ",", "0", ",", "1"}], "}"}]}], "]"}], 
-   "\[IndentingNewLine]", "\[IndentingNewLine]", 
-   RowBox[{"EQ1CONS", " ", "=", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]",
+   RowBox[{RowBox[{"ClearAll", "[",
+      RowBox[{"EQ1CONS", ",", "EQ2CONS", ",", "EQ3CONS"}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{"EQ1CONS", " ", "=",
     RowBox[{
      RowBox[{"(", 
       RowBox[{
@@ -36767,9 +36770,12 @@ Cell[BoxData[
 4b91a25f10a8"],
 
 Cell[BoxData[
- RowBox[{"\[IndentingNewLine]", 
+ RowBox[{"\[IndentingNewLine]",
   RowBox[{
-   RowBox[{"EQ1CONS", " ", "=", 
+   RowBox[{RowBox[{"ClearAll", "[",
+      RowBox[{"EQ1CONS", ",", "EQ2CONS", ",", "EQ3CONS"}], "]"}], ";"}],
+   "\[IndentingNewLine]",
+   RowBox[{"EQ1CONS", " ", "=",
     RowBox[{
      RowBox[{"(", 
       RowBox[{
@@ -37046,12 +37052,12 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"Plot", "[", 
       RowBox[{
-       RowBox[{"EqPUtil", "[", 
+       RowBox[{"EqPUtil", "[",
         RowBox[{
-        "pi", ",", "p0", ",", "k", ",", "1", ",", "\[Gamma]0", ",", ".5"}], 
-        "]"}], ",", 
-       RowBox[{"{", 
-        RowBox[{"k", ",", "0", ",", "1"}], "}"}]}], "]"}], ",", 
+        "pi", ",", "p0", ",", "k", ",", "1", ",", "\[Gamma]0", ",", ".5"}],
+        "]"}], ",",
+       RowBox[{"{",
+        RowBox[{"k", ",", "1", ",", "10"}], "}"}]}], "]"}], ",", 
      RowBox[{"{", 
       RowBox[{"pi", ",", "0", ",", "1"}], "}"}], ",", 
      RowBox[{"{", 
