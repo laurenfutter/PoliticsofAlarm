@@ -1,10 +1,10 @@
 # Error Analysis: `EqPUtil` Piecewise Utility Function
 
-This report identifies three bugs in the construction of `EqPUtil` using `EQ1CONS`, `EQ2CONS`, and `EQ3CONS`.
+This report identifies five bugs in the construction of `EqPUtil` using `EQ1CONS`, `EQ2CONS`, and `EQ3CONS`. All have been fixed.
 
 ---
 
-## Bug 1 (Critical): `EQ3CONS` — Copy-Paste Error in First Condition Group
+## Bug 1 (Critical): `EQ3CONS` — Copy-Paste Error in First Condition Group ✅ FIXED
 
 **Location:** The cell defining `EQ1CONS`, `EQ2CONS`, `EQ3CONS` (around line 36793 of the notebook)
 
@@ -35,7 +35,7 @@ Critically, those `Rst2` conditions **do exist** and are defined earlier in the 
 
 ---
 
-## Bug 2 (Critical): Argument Count Mismatch — `EUPEqXTot` Called with Too Many Arguments
+## Bug 2 (Critical): Argument Count Mismatch — `EUPEqXTot` Called with Too Many Arguments ✅ FIXED
 
 **Location:** The `EqPUtil` definition (around lines 36978–37019)
 
@@ -57,7 +57,7 @@ EUPEq3Tot[pi, p, κ, c, γ, θ]   (* 6 args — no matching definition! *)
 
 Because none of these calls match any defined pattern, Mathematica will return the expressions **unevaluated**, meaning `EqPUtil` will always return `0` (the `Piecewise` default) — not because no equilibrium applies, but because the utility value expressions simply never resolve to numbers.
 
-**Fix:** Update the definitions of `EUPEq1Tot`, `EUPEq2Tot`, and `EUPEq3Tot` to accept the additional `γ` parameter (or remove `γ` from the calls in `EqPUtil` if it is not needed by those functions).
+**Fix:** Removed `γ` from the calls to `EUPEq1Tot`, `EUPEq2Tot`, and `EUPEq3Tot` inside `EqPUtil`, since those functions do not use `γ` (it is already handled by `c1F`/`c2F`/`c3F` through the `EQ*CONS` conditions). All three calls now correctly pass 5 arguments.
 
 ---
 
@@ -89,12 +89,51 @@ Note: Boundary functions (`cp2REq2`, `cp1WEq3`, etc.) intentionally retain `1/2`
 
 ---
 
+## Bug 4 (Critical): Stale `EQ*CONS` Values Due to Immediate Assignment ✅ FIXED
+
+**Location:** Both cells that define `EQ1CONS`, `EQ2CONS`, `EQ3CONS` (lines ~8236 and ~36772)
+
+`EQ1CONS`, `EQ2CONS`, and `EQ3CONS` are assigned with `=` (immediate evaluation), meaning they capture the current values of `con*` variables **at the moment the cell runs**. If the notebook had been partially evaluated before (e.g. a `Manipulate` slider set `κ` or `γ` to a numeric value globally), the `con*` conditions could have collapsed to `True` or `False` before being captured, making all three conditions permanently wrong regardless of input.
+
+**Fix:** Added `ClearAll[EQ1CONS, EQ2CONS, EQ3CONS]` at the top of both cells that define them, ensuring stale values are always cleared before re-assignment:
+
+```mathematica
+ClearAll[EQ1CONS, EQ2CONS, EQ3CONS];
+EQ1CONS = ...
+EQ2CONS = ...
+EQ3CONS = ...
+```
+
+---
+
+## Bug 5 (Critical): κ Range in Second `Manipulate` Excludes All Valid Equilibria ✅ FIXED
+
+**Location:** Second `Manipulate` block (around line 37054)
+
+The second `Manipulate` plotted `EqPUtil` over `{k, 0, 1}` (κ ∈ [0, 1]). However, most equilibrium conditions require **κ > 1** — for example, `con1Eq1Wst2` requires `κ > 1`, and many `Rst2` conditions check `1 ≤ κ ≤ ...`. With κ always in [0, 1], every condition evaluated to `False`, `EqPUtil` always returned the default `0`, and the plot appeared blank.
+
+The first `Manipulate` (RegionPlot) correctly used `{k, 1, 10}`.
+
+**Fix:** Changed the second `Manipulate`'s plot range to match:
+
+```mathematica
+(* Before *)
+Plot[EqPUtil[pi, p0, k, 1, γ0, .5], {k, 0, 1}]
+
+(* After *)
+Plot[EqPUtil[pi, p0, k, 1, γ0, .5], {k, 1, 10}]
+```
+
+---
+
 ## Summary Table
 
-| # | Location | Type | Effect | Status |
-|---|---|---|---|---|
-| 1 | `EQ3CONS` definition | Copy-paste error (`St1` vs `Rst2`) | `EQ3CONS` evaluates wrong region; Eq3 classification is incorrect | ✅ Fixed |
-| 2 | `EqPUtil` calling `EUPEqXTot` | Argument count mismatch (5 vs 6) | All `EUPEqXTot` calls return unevaluated; `EqPUtil` always returns `0` | ✅ Fixed |
-| 3 | Body of `EUPEq2Tot`, `EUPEq3Tot` | Hardcoded `θ = 1/2` ignores parameter | `θ` has no effect on Eq2/Eq3 utility values | ✅ Fixed |
+| # | Severity | Location | Type | Effect | Status |
+|---|---|---|---|---|---|
+| 1 | Critical | `EQ3CONS` definition | Copy-paste error (`St1` vs `Rst2`) | `EQ3CONS` evaluates wrong region; Eq3 classification is incorrect | ✅ Fixed |
+| 2 | Critical | `EqPUtil` calling `EUPEqXTot` | Argument count mismatch (5 vs 6) | All `EUPEqXTot` calls return unevaluated; `EqPUtil` always returns `0` | ✅ Fixed |
+| 3 | Secondary | Body of `EUPEq2Tot`, `EUPEq3Tot` | Hardcoded `θ = 1/2` ignores parameter | `θ` has no effect on Eq2/Eq3 utility values | ✅ Fixed |
+| 4 | Critical | `EQ*CONS` definitions (both cells) | Stale immediate assignment | Prior evaluations corrupt condition logic; `c1F`/`c2F`/`c3F` return wrong values | ✅ Fixed |
+| 5 | Critical | Second `Manipulate` plot range | κ range excludes valid equilibria | No equilibrium ever detected; plot always blank | ✅ Fixed |
 
-**The most likely cause of any immediate runtime failure is Bug 2** — it will silently cause `EqPUtil` to always return `0`, making `RegionPlot`/`Plot` appear blank or flat. Bug 1 is a logical error that produces wrong results without an error message. Bug 3 is a latent issue that activates if `θ` is ever varied.
+**To apply all fixes:** Restart the Mathematica kernel (`Kernel → Quit Kernel`) and evaluate the notebook top-to-bottom.
