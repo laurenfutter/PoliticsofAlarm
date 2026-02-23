@@ -1,6 +1,6 @@
 # Error Analysis: `EqPUtil` Piecewise Utility Function
 
-This report identifies five bugs in the construction of `EqPUtil` using `EQ1CONS`, `EQ2CONS`, and `EQ3CONS`. All have been fixed.
+This report identifies six bugs in the construction of `EqPUtil` using `EQ1CONS`, `EQ2CONS`, and `EQ3CONS`. All have been fixed.
 
 ---
 
@@ -126,6 +126,40 @@ Plot[EqPUtil[pi, p0, k, 1, γ0, .5], {k, 1, 10}]
 
 ---
 
+## Bug 6 (Critical): Pattern Variable Shadowing in `c1F`, `c2F`, `c3F` ✅ FIXED
+
+**Location:** Definitions of `c1F`, `c2F`, `c3F` (near the `EqPUtil` definition)
+
+`c1F`, `c2F`, and `c3F` check whether a given point satisfies `EQ1CONS`, `EQ2CONS`, or `EQ3CONS` respectively by substituting numeric values into the symbolic expression. Their pattern variables were named identically to the global symbols they were meant to substitute:
+
+```mathematica
+(* BROKEN *)
+c1F[pi_?NumericQ, p_?NumericQ, \[Kappa]_?NumericQ, c_?NumericQ,
+    \[Gamma]_?NumericQ, \[Theta]_?NumericQ] :=
+  c1F[pi, p, \[Kappa], c, \[Gamma], \[Theta]] =
+    TrueQ@Quiet@Check[EQ1CONS /. {\[Kappa] -> \[Kappa], \[Gamma] -> \[Gamma],
+        \[Theta] -> \[Theta], pi -> pi, p -> p, c -> c}, False]
+```
+
+Inside the function body, the pattern variable `\[Kappa]` has already been bound to the numeric argument (e.g. `2`). So the replacement rule `{\[Kappa] -> \[Kappa]}` evaluates to `{2 -> 2}` — a no-op. `EQ1CONS` remains fully symbolic after the substitution, and `TrueQ` of any symbolic expression returns `False`. As a result, `c1F` (and `c2F`, `c3F`) **always returned `False`** regardless of the input values, meaning `EqPUtil` could never identify any equilibrium region.
+
+This was confirmed by the diagnostic test `c1F[0.5, 0.7, 2, 1, 1.0, 0.5]` returning `False` for a point that should satisfy `EQ1CONS`.
+
+**Fix:** Renamed all pattern variables to use a `V` suffix (`piV_`, `pV_`, `κV_`, `cV_`, `γV_`, `θV_`). The global symbols on the left-hand side of each replacement rule now correctly refer to the unbound global symbol, not the local pattern variable:
+
+```mathematica
+(* FIXED *)
+c1F[piV_?NumericQ, pV_?NumericQ, \[Kappa]V_?NumericQ, cV_?NumericQ,
+    \[Gamma]V_?NumericQ, \[Theta]V_?NumericQ] :=
+  c1F[piV, pV, \[Kappa]V, cV, \[Gamma]V, \[Theta]V] =
+    TrueQ@Quiet@Check[EQ1CONS /. {\[Kappa] -> \[Kappa]V, \[Gamma] -> \[Gamma]V,
+        \[Theta] -> \[Theta]V, pi -> piV, p -> pV, c -> cV}, False]
+```
+
+The same rename was applied to `c2F` (substituting into `EQ2CONS`) and `c3F` (substituting into `EQ3CONS`).
+
+---
+
 ## Summary Table
 
 | # | Severity | Location | Type | Effect | Status |
@@ -135,5 +169,6 @@ Plot[EqPUtil[pi, p0, k, 1, γ0, .5], {k, 1, 10}]
 | 3 | Secondary | Body of `EUPEq2Tot`, `EUPEq3Tot` | Hardcoded `θ = 1/2` ignores parameter | `θ` has no effect on Eq2/Eq3 utility values | ✅ Fixed |
 | 4 | Critical | `EQ*CONS` definitions (both cells) | Stale immediate assignment | Prior evaluations corrupt condition logic; `c1F`/`c2F`/`c3F` return wrong values | ✅ Fixed |
 | 5 | Critical | Second `Manipulate` plot range | κ range excludes valid equilibria | No equilibrium ever detected; plot always blank | ✅ Fixed |
+| 6 | Critical | `c1F`, `c2F`, `c3F` definitions | Pattern variable shadowing global symbols | Replacement rules become no-ops; `TrueQ` always returns `False`; `EqPUtil` never finds any equilibrium | ✅ Fixed |
 
 **To apply all fixes:** Restart the Mathematica kernel (`Kernel → Quit Kernel`) and evaluate the notebook top-to-bottom.
